@@ -65,7 +65,7 @@ To deliver a polished, minimal scope within the time constraint, I made the foll
 1. **Clone the repository**
 
    ```bash
-   git clone <repository-url>
+   git clone [https://github.com/Cold-Coldie/technician-work-order-apps.git](https://github.com/Cold-Coldie/technician-work-order-apps.git)
    cd work-orders-app
 
    ```
@@ -78,10 +78,12 @@ To deliver a polished, minimal scope within the time constraint, I made the foll
    ```
 
 3. **Seed sample data**
+
    ```bash
    npm run seed
 
    ```
+
 4. **Run the development server**
 
    ```bash
@@ -129,6 +131,7 @@ All endpoints return JSON and are located under `/api/work-orders`:
 ## Project Structure
 ```
 
+** tests**/ # Test directory containing test files
 app/
 api/work-orders/ # API route handlers
 work-orders/ # Work order pages

@@ -1,66 +1,96 @@
-import Image from "next/image";
-import styles from "./page.module.css";
+import { getWorkOrdersFromAPI } from '@/lib/server-api-client';
+import Link from 'next/link';
+import WorkOrderSearch from './components/WorkOrderSearch';
+import styles from './page.module.css';
 
-export default function Home() {
+interface PageProps {
+  searchParams: Promise<{ q?: string }>;
+}
+
+export default async function WorkOrdersPage({ searchParams }: PageProps) {
+  const { q } = await searchParams;
+  const filters = q ? { q } : undefined;
+  const workOrders = await getWorkOrdersFromAPI(filters);
+
   return (
-    <div className={styles.page}>
-      <main className={styles.main}>
-        <Image
-          className={styles.logo}
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className={styles.intro}>
-          <h1>To get started, edit the page.tsx file.</h1>
+    <div className={styles.container}>
+      <div className={styles.header}>
+        <h1>Work Orders</h1>
+        <Link href="/work-orders/create" className={styles.createButton}>
+          Create New
+        </Link>
+      </div>
+
+      <WorkOrderSearch />
+
+      {q && (
+        <div className={styles.searchResults}>
           <p>
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              Learning
-            </a>{" "}
-            center.
+            {workOrders.length} work order{workOrders.length !== 1 ? 's' : ''} found
+            {q && ` for "${q}"`}
           </p>
         </div>
-        <div className={styles.ctas}>
-          <a
-            className={styles.primary}
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className={styles.logo}
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className={styles.secondary}
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+      )}
+
+      <div className={styles.workOrdersGrid}>
+        {workOrders.map((order) => (
+          <div key={order.id} className={styles.workOrderCard}>
+            <div className={styles.cardHeader}>
+              <h3 className={styles.title}>{order.title}</h3>
+              <span className={`${styles.priority} ${styles[order.priority.toLowerCase()]}`}>
+                {order.priority}
+              </span>
+            </div>
+
+            <div className={styles.cardBody}>
+              <p className={styles.description}>
+                {order.description.length > 100
+                  ? `${order.description.substring(0, 100)}...`
+                  : order.description
+                }
+              </p>
+
+              <div className={styles.meta}>
+                <span className={`${styles.status} ${styles[order.status.replace(' ', '').toLowerCase()]}`}>
+                  {order.status}
+                </span>
+                <span className={styles.updated}>
+                  Updated: {new Date(order.updatedAt).toLocaleDateString()}
+                </span>
+              </div>
+            </div>
+
+            <div className={styles.cardActions}>
+              <Link href={`/work-orders/${order.id}`} className={styles.viewButton}>
+                View
+              </Link>
+              <Link href={`/work-orders/edit/${order.id}`} className={styles.editButton}>
+                Edit
+              </Link>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {workOrders.length === 0 && (
+        <div className={styles.emptyState}>
+          {q ? (
+            <>
+              <p>No work orders found for "{q}".</p>
+              <Link href="/" className={styles.createButton}>
+                View all work orders
+              </Link>
+            </>
+          ) : (
+            <>
+              <p>No work orders found.</p>
+              <Link href="/work-orders/create" className={styles.createButton}>
+                Create your first work order
+              </Link>
+            </>
+          )}
         </div>
-      </main>
+      )}
     </div>
   );
 }
