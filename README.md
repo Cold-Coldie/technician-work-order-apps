@@ -65,7 +65,7 @@ To deliver a polished, minimal scope within the time constraint, I made the foll
 1. **Clone the repository**
 
    ```bash
-   git clone [https://github.com/Cold-Coldie/technician-work-order-apps.git](https://github.com/Cold-Coldie/technician-work-order-apps.git)
+   git clone https://github.com/Cold-Coldie/technician-work-order-apps.git
    cd work-orders-app
 
    ```
