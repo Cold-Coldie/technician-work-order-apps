@@ -1,36 +1,143 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Work Orders Management System
+
+A full-stack Next.js application for managing technician work orders, built with TypeScript and the App Router.
+
+## Assessment Decisions & Trade-offs
+
+### Scope Management (4-8 hour timebox)
+
+To deliver a polished, minimal scope within the time constraint, I made the following decisions:
+
+**Chose Text Search over Status Filter**
+
+- Implemented title-based search instead of status filtering
+- Rationale: Text search is more generally useful for finding specific work orders
+- Simpler UI with single input field vs. dropdown + search combination
+
+**File-based JSON Storage**
+
+- Used simple file-based persistence instead of database
+- Trade-off: Not suitable for production but sufficient for assessment scope
+- Benefits: Zero dependencies, simple setup
+
+**Testing Scope**
+
+- Focused on core validation and component interactions
+- 3 test suites covering data layer, validation, and UI components
+- Skipped E2E tests to stay within timebox (mentioned as optional)
+
+**UI/UX Prioritization**
+
+- Clean, responsive design with CSS Modules
+- Keyboard navigation support
+- Clear success/error messaging
+- Skipped advanced a11y features (aria-labels, focus management) as bonus items
+
+## Architecture & Technical Decisions
+
+### Server/Client Boundaries
+
+- **Server Components**: Used for data fetching in listing and detail pages
+- **Client Components**: Used only for forms and interactive elements (search)
+- **API Routes**: All CRUD operations go through route handlers
+
+### Cache Strategy
+
+- Used `cache: 'no-store'` for dynamic work order data
+- Rationale: Work orders change frequently (create, update, delete)
+- Ensures users always see fresh data
+
+### Validation & Security
+
+- **Zod** for server-side validation in API routes
+- Safe rendering of descriptions (no `dangerouslySetInnerHTML`)
+- Field-level error handling in forms
 
 ## Getting Started
 
-First, run the development server:
+### Prerequisites
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+- Node.js 18+
+- npm, yarn, or pnpm
+
+### Installation
+
+1. **Clone the repository**
+
+   ```bash
+   git clone <repository-url>
+   cd work-orders-app
+
+   ```
+
+2. **Install dependencies**
+
+   ```bash
+   npm install
+
+   ```
+
+3. **Seed sample data**
+   ```bash
+   npm run seed
+
+   ```
+4. **Run the development server**
+
+   ```bash
+   npm run dev
+
+   ```
+
+5. **Open your browser**
+   Navigate to [http://localhost:3000](http://localhost:3000)
+
+### Testing
+
+# Run unit tests
+
+npm test
+
+# Run tests in watch mode
+
+npm run test:watch
+
+# Run tests with coverage
+
+npm run test:coverage
+
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Available Scripts
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+* `npm run dev` - Start development server
+* `npm run build` - Build for production
+* `npm run start` - Start production server
+* `npm run seed` - Seed sample work orders
+* `npm test` - Run test suite
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## API Endpoints
 
-## Learn More
+All endpoints return JSON and are located under `/api/work-orders`:
 
-To learn more about Next.js, take a look at the following resources:
+* `GET /api/work-orders` - List work orders (optional query: `?q=search`)
+* `POST /api/work-orders` - Create new work order
+* `GET /api/work-orders/[id]` - Get single work order
+* `PUT /api/work-orders/[id]` - Update work order
+* `DELETE /api/work-orders/[id]` - Delete work order
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Project Structure
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+app/
+api/work-orders/ # API route handlers
+work-orders/ # Work order pages
+components/ # Reusable React components
+lib/
+data.ts # File-based persistence
+validation.ts # Zod schemas
+api-client.ts # Client-side API calls
+server-api-client.ts # Server-side data access
+types/ # TypeScript definitions
+scripts/
+seed.ts # Sample data seeding
